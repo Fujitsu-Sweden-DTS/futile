@@ -34,6 +34,24 @@ eslint-fix() {
     npx eslint . --fix
 }
 
+die() {
+    echo-red "$@"
+    exit 1
+}
+
+publish() {
+    run-tests || die Refuse to publish with failing tests
+    [ -z "$(git status --porcelain)" ] || die Dirty working directory
+    version=$(node -e 'console.log(require("./package.json").version)') || die Error finding version
+    [ -n "$version" ] || die Cannot find version
+    this_commit=$(git rev-parse HEAD) || die Missing or broken git repository
+    master_commit=$(git rev-parse master) || die Cannot find master branch
+    tagged_commit=$(git rev-parse v$version) || die Tag v$version is missing
+    [ $this_commit == $master_commit ] || die We are not on master branch
+    [ $tagged_commit == $master_commit ] || die Tag v$version does not point to master
+    npm publish --access public
+}
+
 print-help() {
 cat <<EOF
 Usage:
@@ -50,6 +68,9 @@ Usage:
   ./script run-tests         # Run tests.
 
   ./script eslint-fix        # Let ESLint fix everything it can.
+
+  ./script publish           # Make sure everything looks ready for publishing,
+                             # and then publish to registry.
 EOF
 }
 
