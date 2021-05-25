@@ -81,7 +81,7 @@ futile.reqMock = hint => ({
   originalUrl: null,
   path: null,
   hint,
-  res: { locals: { access: {} } },
+  res: { locals: { } },
 });
 
 futile.since = x => futile.now() - x;
