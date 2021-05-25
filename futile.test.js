@@ -53,6 +53,12 @@ test("canonize", () => {
   for (const value of dates) {
     expect(futile.canonize(value)).toBe(JSON.stringify(value));
   }
+  class WeirdClass {}
+  /* eslint-disable-next-line no-magic-numbers */
+  const invalid_values = [new WeirdClass(), Symbol("a"), 1n];
+  for (const invalid_value of invalid_values) {
+    expect(() => futile.canonize(invalid_value)).toThrow();
+  }
 });
 
 test("diffIntDiff", () => {
@@ -96,6 +102,10 @@ test("interval", () => {
       expect(_.isInteger(ms_value)).toBeTruthy();
       expect(futile.interval(text)).toBe(ms_value);
     }
+  }
+  const invalid_intervals = ["1s", "ms", "45", Symbol("1 s"), { "1 s": "1 s" }, ["1 s"]];
+  for (const invalid_interval of invalid_intervals) {
+    expect(() => futile.interval(invalid_interval)).toThrow();
   }
 });
 
@@ -141,14 +151,16 @@ describe("sleep", () => {
     "1 s",
     "78 ms",
     "2 s",
+    /* eslint-disable-next-line no-magic-numbers */
+    1537,
   ];
   for (const interval of intervals) {
-    test(interval, async () => {
+    test(JSON.stringify(interval), async () => {
       const before = futile.now();
       await futile.sleep(interval);
       const after = futile.now();
       const actual_interval = after - before;
-      const interval_diff = actual_interval - futile.interval(interval);
+      const interval_diff = actual_interval - (_.isNumber(interval) ? interval : futile.interval(interval));
       expect(_.isInteger(interval_diff)).toBeTruthy();
       expect(0 <= interval_diff).toBeTruthy();
       expect(interval_diff <= small_amount_of_time).toBeTruthy();
