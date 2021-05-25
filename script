@@ -25,7 +25,7 @@ npm-ci() {
 }
 
 run-tests() {
-    npx jest
+    npx jest --coverage --coverageThreshold='{"global":{"branches":100,"functions":100,"lines":100,"statements":100}}'
     npx eslint .
     echo-green done testing
 }

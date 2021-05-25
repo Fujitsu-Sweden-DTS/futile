@@ -1,5 +1,5 @@
 "use strict";
-/* global test, expect, process */
+/* global test, expect */
 const package_json = require("./package.json");
 const package_lock_json = require("./package-lock.json");
 const version_in_package_json = package_json.version;
@@ -8,7 +8,6 @@ const fs = require("fs");
 const RELEASE_NOTES_md = `${fs.readFileSync("./RELEASE_NOTES.md")}`;
 const eslint = require("eslint");
 const jest_ = require("jest");
-const mode = process.env.COS_DW_MODE || "dev";
 
 test("Version", () => {
   expect(version_in_package_lock_json).toBe(version_in_package_json);
@@ -23,8 +22,5 @@ test("Version", () => {
   }
   expect(eslint.ESLint.version).toBe(package_json.devDependencies.eslint);
   expect(jest_.getVersion()).toBe(package_json.devDependencies.jest);
-  if (mode === "prod") {
-    expect(last_rn_heading).toBe(`## v${version_in_package_json}`);
-    expect(process.env.VERSIONTAG).toEqual(`v${version_in_package_json}`);
-  }
+  expect(last_rn_heading).toBe(`## v${version_in_package_json}`);
 });
