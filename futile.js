@@ -2,7 +2,7 @@
 const _ = require("lodash");
 const { promisify } = require("util");
 
-const utils = module.exports;
+const futile = module.exports;
 
 // See ./README.md for documentation
 
@@ -25,12 +25,12 @@ function canonize(o) {
       }
       throw new Error("Don't know how to canonize this weird non-plain object");
     default:
-      throw utils.err("Don't know how to canonize a value of this type", { type: typeof o });
+      throw futile.err("Don't know how to canonize a value of this type", { type: typeof o });
   }
 }
-utils.canonize = canonize;
+futile.canonize = canonize;
 
-utils.diffIntDiff = function (data1, data2) {
+futile.diffIntDiff = function (data1, data2) {
   const map = {},
     set1 = [],
     set2 = [];
@@ -50,14 +50,14 @@ utils.diffIntDiff = function (data1, data2) {
   return [_.map(onlyin1c, x => map[x]), _.map(inbothc, x => map[x]), _.map(onlyin2c, x => map[x])];
 };
 
-utils.err = function (message, obj) {
+futile.err = function (message, obj) {
   // Create a new Error object without any message.
   const err = Error("");
   // Add a message.
   err.message = message;
-  // Adjust the stack to look like the error was created at the point where utils.err was called.
+  // Adjust the stack to look like the error was created at the point where futile.err was called.
   // Since the original stack string was created with an empty error message, we know that it takes only 1 line.
-  // So, by removing the top 2 lines and adding back a line with the error message, we get the effect of removing the stack frame for the call to utils.err.
+  // So, by removing the top 2 lines and adding back a line with the error message, we get the effect of removing the stack frame for the call to futile.err.
   const discard_lines = 2;
   err.stack = [`Error: ${message}`, ...err.stack.split("\n").slice(discard_lines)].join("\n");
   // Add other parameters to the error
@@ -67,29 +67,29 @@ utils.err = function (message, obj) {
   return err;
 };
 
-utils.interval = function (text) {
+futile.interval = function (text) {
   const m = text.match(/^([0-9]+) (ms|s|min|h)$/u);
   if (!m) {
-    throw utils.err("Not a valid interval string", { text });
+    throw futile.err("Not a valid interval string", { text });
   }
   return Number.parseInt(m[1]) * { ms: 1, s: 1000, min: 60000, h: 3600000 }[m[2]];
 };
 
-utils.now = () => new Date();
+futile.now = () => new Date();
 
-utils.reqMock = hint => ({
+futile.reqMock = hint => ({
   originalUrl: null,
   path: null,
   hint,
   res: { locals: { access: {} } },
 });
 
-utils.since = x => utils.now() - x;
+futile.since = x => futile.now() - x;
 
 const _sleep_ms = promisify(setTimeout);
-utils.sleep = delay => _sleep_ms(_.isNumber(delay) ? delay : utils.interval(delay));
+futile.sleep = delay => _sleep_ms(_.isNumber(delay) ? delay : futile.interval(delay));
 
-utils.xor = function (...args) {
+futile.xor = function (...args) {
   let ret = false;
   for (const item of args) {
     if (item) {
