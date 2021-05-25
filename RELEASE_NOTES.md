@@ -4,4 +4,7 @@
 
 First release.
 
-## v0.1.1
+## v0.2.0
+
+* Modify `futile.reqMock`.
+* 100% test coverage.
