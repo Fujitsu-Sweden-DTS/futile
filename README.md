@@ -24,6 +24,25 @@ Note that JSON.stringify does not provide a canonization w.r.t. `_.isEqual`.
 For example, `futile.canonize({ a:1, b:2 }) === futile.canonize({ b:2, a:1 })` but `JSON.stringify({ a:1, b:2 }) !== JSON.stringify({ b:2, a:1 })`.
 One use case for a canonizing serialization is property names for indexing on the contents of objects.
 
+### futile.deepFreeze(value)
+
+Recursive variant of `Object.freeze()`.
+
+Example:
+```js
+> o = deepFreeze({ a: { b: "ORIGINAL" }, c: 2 });
+{ a: { b: "ORIGINAL" }, c: 2 };
+> o.a.b = "changed";
+"changed";
+> o;
+{ a: { b: "ORIGINAL" }, c: 2 };
+```
+
+Note that
+
+* The change to read-only properties is destructive, i.e. the argument to `futile.deepFreeze` is altered. If you want to keep a changeable version around, use `_.cloneDeep` first.
+* In `strict` mode, assigning to a read-only property as in the example above will throw an error.
+
 ### futile.diffIntDiff(data1, data2)
 
 A fast way to compute `[_.differenceWith(data1, data2, _.isEqual), _.intersectionWith(data1, data2, _.isEqual), _.differenceWith(data2, data1, _.isEqual)]`.
@@ -40,6 +59,22 @@ Makes it easier to pass meta-data in an error.
 
 ```js
 throw futile.err("Error message", { metadata1: value1, otherthing2: value2 })
+```
+
+### futile.indexBy(collection, keyfun)
+
+Given an array or other collection, return a plain object with values from the collection and keys calculated using `keyfun`.
+If keyfun is a string, it is treated as a function that returns the property by that name.
+
+Example:
+
+```js
+> const data = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }];
+undefined
+> indexBy(data, 'name')
+{ Alice: { id: 1, name: 'Alice' }, Bob: { id: 2, name: 'Bob' } }
+> indexBy(data, x => `_${x.id}`)
+{ _1: { id: 1, name: 'Alice' }, _2: { id: 2, name: 'Bob' } }
 ```
 
 ### futile.interval(intervalString)

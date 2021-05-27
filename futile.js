@@ -50,6 +50,16 @@ futile.diffIntDiff = function (data1, data2) {
   return [_.map(onlyin1c, x => map[x]), _.map(inbothc, x => map[x]), _.map(onlyin2c, x => map[x])];
 };
 
+function deepFreeze(x) {
+  if (typeof x === "object") {
+    for (const key in x) {
+      deepFreeze(x[key]);
+    }
+  }
+  return Object.freeze(x);
+}
+futile.deepFreeze = deepFreeze;
+
 futile.err = function (message, obj) {
   // Create a new Error object without any message.
   const err = Error("");
@@ -65,6 +75,27 @@ futile.err = function (message, obj) {
     err[key] = obj[key];
   }
   return err;
+};
+
+futile.indexBy = function (collection, keyfun) {
+  const ret = {};
+  if (typeof keyfun === "string") {
+    const keyattrib = keyfun;
+    keyfun = item => {
+      if (!(keyattrib in item)) {
+        throw new Error("indexBy could not find key");
+      }
+      return item[keyattrib];
+    };
+  }
+  for (const item of collection) {
+    const key = keyfun(item);
+    if (key in ret) {
+      throw new Error("duplicate key in collection sent to indexBy");
+    }
+    ret[key] = item;
+  }
+  return ret;
 };
 
 futile.interval = function (text) {
