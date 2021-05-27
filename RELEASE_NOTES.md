@@ -8,3 +8,8 @@ First release.
 
 * Modify `futile.reqMock`.
 * 100% test coverage.
+
+## v0.3.0
+
+* Add `futile.deepFreeze`.
+* Add `futile.indexBy`.
