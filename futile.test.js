@@ -61,6 +61,43 @@ test("canonize", () => {
   }
 });
 
+test("deepFreeze", () => {
+  /* eslint-disable no-magic-numbers */
+  const test_cases = [
+    [
+      { a: { b: "ORIGINAL" }, c: 2 },
+      object => object.a.b,
+      (object, newValue) => {
+        object.a.b = newValue;
+      },
+    ],
+    [
+      { a: { b: [2, 3, { c: 4, d: [5, 6, { e: "ORIGINAL" }] }] }, f: 7 },
+      object => object.a.b[2].d[2].e,
+      (object, newValue) => {
+        object.a.b[2].d[2].e = newValue;
+      },
+    ],
+  ];
+  /* eslint-enable no-magic-numbers */
+  for (const [structure, getter, setter] of test_cases) {
+    const structure1 = _.cloneDeep(structure);
+    const structure2 = _.cloneDeep(structure);
+    const structure3 = futile.deepFreeze(structure2);
+    expect(getter(structure)).toBe("ORIGINAL");
+    expect(getter(structure1)).toBe("ORIGINAL");
+    expect(getter(structure2)).toBe("ORIGINAL");
+    expect(getter(structure3)).toBe("ORIGINAL");
+    setter(structure1, "changed");
+    expect(() => setter(structure2, "changed")).toThrow();
+    expect(() => setter(structure3, "changed")).toThrow();
+    expect(getter(structure)).toBe("ORIGINAL");
+    expect(getter(structure1)).toBe("changed");
+    expect(getter(structure2)).toBe("ORIGINAL");
+    expect(getter(structure3)).toBe("ORIGINAL");
+  }
+});
+
 test("diffIntDiff", () => {
   for (const data1 of arrays) {
     for (const data2 of arrays) {
@@ -84,6 +121,16 @@ test("err", () => {
       expect(_.pick(err, _.keys(object))).toEqual(object);
     }
   }
+});
+
+test("indexBy", () => {
+  const data = [{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }];
+  const data2 = _.cloneDeep(data);
+  expect(futile.indexBy(data, "name")).toEqual({ Alice: { id: 1, name: "Alice" }, Bob: { id: 2, name: "Bob" } });
+  expect(futile.indexBy(data, x => `_${x.id}`)).toEqual({ _1: { id: 1, name: "Alice" }, _2: { id: 2, name: "Bob" } });
+  expect(data).toEqual(data2); // Make sure that indexBy is non-destructive
+  expect(() => futile.indexBy(data, "NAME")).toThrow();
+  expect(() => futile.indexBy([{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }, { id: 3, name: "Bob" }], "name")).toThrow();
 });
 
 test("interval", () => {
