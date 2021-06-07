@@ -27,7 +27,15 @@ const arrays = [
   [{ a: 7 }, { a: 7 }, { a: 7 }, { a: 8, b: 8 }],
   [{ a: 7 }, { a: 7 }, { a: 7 }, { a: 7, b: 8 }, { a: 8, b: 8 }, { a: 8, b: 8, c: 5 }],
 ];
-const dates = [new Date("2021-05-24T15:44Z")];
+const dates = [
+  new Date("2034-08-31T03:04Z"),
+  new Date("2021-05-24T00:00Z"),
+  new Date("2020-02-29T23:59Z"),
+  new Date("2018-07-31T15:44Z"),
+  new Date("1970-01-02T07:00Z"),
+  new Date("1965-07-10T23:48Z"),
+  new Date("1599-10-13T11:37Z"),
+];
 /* eslint-enable no-magic-numbers */
 
 test("canonize", () => {
@@ -50,8 +58,10 @@ test("canonize", () => {
       }
     }
   }
-  for (const value of dates) {
-    expect(futile.canonize(value)).toBe(JSON.stringify(value));
+  for (const date of dates) {
+    for (const value of [{ a: date }, [true, date], { b: [1, { c: date }] }]) {
+      expect(futile.canonize(value)).toBe(JSON.stringify(value));
+    }
   }
   class WeirdClass {}
   /* eslint-disable-next-line no-magic-numbers */
@@ -158,14 +168,18 @@ test("interval", () => {
 
 const small_amount_of_time = 200;
 test("now", () => {
-  const now = futile.now();
-  const now2 = new Date();
-  const interval = now2 - now;
-  expect(now instanceof Date).toBeTruthy();
+  const now1 = new Date();
+  const now2 = futile.now();
+  const now3 = new Date();
+  const interval1 = now2 - now1;
+  const interval2 = now3 - now2;
+  expect(now1 instanceof Date).toBeTruthy();
   expect(now2 instanceof Date).toBeTruthy();
-  expect(_.isInteger(interval)).toBeTruthy();
-  expect(0 <= interval).toBeTruthy();
-  expect(interval <= small_amount_of_time).toBeTruthy();
+  expect(now3 instanceof Date).toBeTruthy();
+  expect(_.isInteger(interval1)).toBeTruthy();
+  expect(_.isInteger(interval2)).toBeTruthy();
+  expect(0 <= interval1 && interval1 <= small_amount_of_time).toBeTruthy();
+  expect(0 <= interval2 && interval2 <= small_amount_of_time).toBeTruthy();
 });
 
 test("reqMock", () => {
@@ -188,8 +202,7 @@ test("since", () => {
     expect(_.isInteger(since1)).toBeTruthy();
     expect(_.isInteger(since2)).toBeTruthy();
     expect(_.isInteger(since3)).toBeTruthy();
-    expect(since1 <= since2).toBeTruthy();
-    expect(since2 <= since3).toBeTruthy();
+    expect(since1 <= since2 && since2 <= since3).toBeTruthy();
   }
 });
 
@@ -197,6 +210,8 @@ describe("sleep", () => {
   const intervals = [
     "1 s",
     "78 ms",
+    "1205 ms",
+    "0 s",
     "2 s",
     /* eslint-disable-next-line no-magic-numbers */
     1537,
@@ -209,8 +224,7 @@ describe("sleep", () => {
       const actual_interval = after - before;
       const interval_diff = actual_interval - (_.isNumber(interval) ? interval : futile.interval(interval));
       expect(_.isInteger(interval_diff)).toBeTruthy();
-      expect(0 <= interval_diff).toBeTruthy();
-      expect(interval_diff <= small_amount_of_time).toBeTruthy();
+      expect(0 <= interval_diff && interval_diff <= small_amount_of_time).toBeTruthy();
     });
   }
 });
