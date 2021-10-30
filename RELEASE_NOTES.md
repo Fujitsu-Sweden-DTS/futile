@@ -13,3 +13,7 @@ First release.
 
 * Add `futile.deepFreeze`.
 * Add `futile.indexBy`.
+
+## v0.4.0
+
+Maintenance release.
