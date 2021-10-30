@@ -71,9 +71,9 @@ Example:
 ```js
 > const data = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }];
 undefined
-> indexBy(data, 'name')
+> futile.indexBy(data, 'name')
 { Alice: { id: 1, name: 'Alice' }, Bob: { id: 2, name: 'Bob' } }
-> indexBy(data, x => `_${x.id}`)
+> futile.indexBy(data, x => `_${x.id}`)
 { _1: { id: 1, name: 'Alice' }, _2: { id: 2, name: 'Bob' } }
 ```
 
