@@ -17,3 +17,8 @@ First release.
 ## v0.4.0
 
 Maintenance release.
+
+## v0.5.0
+
+- Removed ESLint
+- Updated npm dependencies
