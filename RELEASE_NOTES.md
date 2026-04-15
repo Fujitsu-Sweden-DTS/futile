@@ -22,3 +22,9 @@ Maintenance release.
 
 - Removed ESLint
 - Updated npm dependencies
+
+## v0.6.0
+
+- Resolve npm vulnerabilities.
+  - Bumped lodash
+  - Ran `npm audit fix`
