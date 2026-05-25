@@ -28,3 +28,7 @@ Maintenance release.
 - Resolve npm vulnerabilities.
   - Bumped lodash
   - Ran `npm audit fix`
+
+## v0.7.0
+
+- Replaced node reliant *promisify* sleep with native JS for browser compatability.

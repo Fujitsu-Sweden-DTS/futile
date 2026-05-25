@@ -1,6 +1,5 @@
 "use strict";
 const _ = require("lodash");
-const { promisify } = require("util");
 
 const futile = module.exports;
 
@@ -117,7 +116,7 @@ futile.reqMock = hint => ({
 
 futile.since = x => futile.now() - x;
 
-const _sleep_ms = promisify(setTimeout);
+const _sleep_ms = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 futile.sleep = delay => _sleep_ms(_.isNumber(delay) ? delay : futile.interval(delay));
 
 futile.xor = function (...args) {
